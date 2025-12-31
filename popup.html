@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extractor Exámenes</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header principal -->
+        <div class="main-header">
+            <div class="header-left">
+                <div class="ssasur-logo-compact">
+                    <div class="logo-blue-compact"></div>
+                    <div class="logo-red-compact"></div>
+                </div>
+                <div class="header-title">
+                    <h2>Extractor de Laboratorio</h2>
+                    <p>Extracción automática de exámenes</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn" id="settingsBtn">
+                    <span>🔬</span> Adaptado de ExtractorHIS
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel de categorías principales (tabs) -->
+        <div class="categories-panel" id="categoriesPanel">
+            <div class="category-tab active" data-category="all" id="tab-all">
+                <span class="icon">📋</span> Todos los Exámenes
+            </div>
+            <div class="category-tab" data-category="hemograma" id="tab-hemograma">
+                <span class="icon">🩸</span> Hemograma
+            </div>
+            <div class="category-tab" data-category="bioquimica" id="tab-bioquimica">
+                <span class="icon">🧪</span> Bioquímica
+            </div>
+            <div class="category-tab" data-category="coagulacion" id="tab-coagulacion">
+                <span class="icon">💉</span> Coagulación
+            </div>
+            <div class="category-tab" data-category="gases" id="tab-gases">
+                <span class="icon">💨</span> Gases en Sangre
+            </div>
+            <div class="category-tab" data-category="nutricional" id="tab-nutricional">
+                <span class="icon">🥗</span> Nutricional
+            </div>
+        </div>
+
+        <!-- Panel de opciones avanzadas (oculto por defecto) -->
+        <div class="advanced-options-panel" id="advancedOptionsPanel">
+            <div class="advanced-options-header">
+                <h3 id="advancedPanelTitle">Opciones Avanzadas</h3>
+                <button class="close-advanced-btn" id="closeAdvancedBtn">&times;</button>
+            </div>
+            
+            <div class="advanced-exams-container" id="advancedExamsContainer">
+                <!-- Contenido dinámico según la categoría seleccionada -->
+            </div>
+        </div>
+
+        <!-- Panel de opciones de formato -->
+        <div class="format-panel">
+            <span class="format-label">Formato de salida:</span>
+            <div class="format-options-group">
+                <div class="format-option">
+                    <input type="checkbox" id="formatHb" checked>
+                    <label for="formatHb">Hb (en vez de Hg)</label>
+                </div>
+                <div class="format-option">
+                    <input type="checkbox" id="formatMayusculas">
+                    <label for="formatMayusculas">MAYÚSCULAS</label>
+                </div>
+                <div class="format-option">
+                    <input type="checkbox" id="formatDosPuntos" checked>
+                    <label for="formatDosPuntos">Dos puntos (:)</label>
+                </div>
+                <div class="format-option">
+                    <input type="checkbox" id="formatSaltos" checked>
+                    <label for="formatSaltos">Saltos de línea</label>
+                </div>
+                <div class="format-option">
+                    <input type="checkbox" id="formatFecha" checked>
+                    <label for="formatFecha">Incluir fecha</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <div class="results-panel">
+                <div class="results-header">
+                    <h3>RESULTADO EXTRACTADO</h3>
+                    <div class="action-buttons-top">
+                        <button class="action-btn primary" id="extractBtn">
+                            <span>⚡</span> Extraer Ahora
+                        </button>
+                        <button class="action-btn" id="copyAllBtn">
+                            <span>📋</span> Copiar Todo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="results-container" id="resultsContainer">
+                    <div class="results-placeholder" id="resultsPlaceholder">
+                        <div class="icon">📄</div>
+                        <p>Selecciona los exámenes que deseas extraer<br>y haz clic en "Extraer Ahora"</p>
+                        <p style="font-size: 11px; margin-top: 10px;">
+                            Se copiará automáticamente del portapapeles
+                        </p>
+                    </div>
+                    <div id="resultsContent" style="display: none;"></div>
+                </div>
+
+                <div class="action-buttons-bottom">
+                    <button class="action-btn" id="selectAllBtn">
+                        <span>✓</span> Seleccionar Todo
+                    </button>
+                    <button class="action-btn" id="clearAllBtn">
+                        <span>✗</span> Limpiar Todo
+                    </button>
+                    <button class="action-btn success" id="autoModeBtn">
+                        <span>🤖</span> Modo Automático
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="main-footer">
+            <div class="footer-left">
+                INTHHHA 2025 - Extractor de Laboratorio v1.0
+            </div>
+            <div class="footer-right">
+                <img src="icons/ufro-logo.png" alt="UFRO" class="ufro-logo-small">
+                <span style="font-size: 11px; color: #5a6c7d;">Rápido & Pulgoso Inc. 2025</span>
+            </div>
+        </div>
+
+        <!-- Notificación -->
+        <div class="notification" id="notification"></div>
+    </div>
+
+    <!-- Plantillas para contenido dinámico -->
+    <template id="template-hemograma">
+        <div class="panel-section">
+            <h3 class="panel-title">HEMOGRAMA AVANZADO</h3>
+            <div class="exam-group">
+                <div class="exam-main">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="exam-checkbox" data-exam="hemograma" checked>
+                        <span class="checkmark"></span>
+                        Hemograma completo
+                    </label>
+                </div>
+                <div class="exam-suboptions">
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="hcto">
+                            <span class="checkmark"></span>
+                            Hematocrito (Hcto)
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="vcm">
+                            <span class="checkmark"></span>
+                            VCM
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="chcm">
+                            <span class="checkmark"></span>
+                            CHCM
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="rdw">
+                            <span class="checkmark"></span>
+                            RDW
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="reticulocitos">
+                            <span class="checkmark"></span>
+                            Reticulocitos
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="linfocitos">
+                            <span class="checkmark"></span>
+                            Linfocitos %
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="ran">
+                            <span class="checkmark"></span>
+                            RAN
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="ral">
+                            <span class="checkmark"></span>
+                            RAL
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-bioquimica">
+        <div class="panel-section">
+            <h3 class="panel-title">BIOQUÍMICA AVANZADA</h3>
+            <div class="exam-group">
+                <div class="exam-main">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="exam-checkbox" data-exam="pcr" checked>
+                        <span class="checkmark"></span>
+                        PCR + Procalcitonina
+                    </label>
+                </div>
+                <div class="exam-main">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="exam-checkbox" data-exam="renal" checked>
+                        <span class="checkmark"></span>
+                        Función Renal
+                    </label>
+                </div>
+                <div class="exam-suboptions">
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="vfg">
+                            <span class="checkmark"></span>
+                            VFG
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="urea">
+                            <span class="checkmark"></span>
+                            Urea
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="electrolitos">
+                            <span class="checkmark"></span>
+                            Electrolitos (Na/K/Cl)
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="magnesio">
+                            <span class="checkmark"></span>
+                            Magnesio
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="acidoUrico">
+                            <span class="checkmark"></span>
+                            Ácido Úrico
+                        </label>
+                    </div>
+                </div>
+                <div class="exam-main">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="exam-checkbox" data-exam="hepatico" checked>
+                        <span class="checkmark"></span>
+                        Función Hepática
+                    </label>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-coagulacion">
+        <div class="panel-section">
+            <h3 class="panel-title">COAGULACIÓN AVANZADA</h3>
+            <div class="exam-group">
+                <div class="exam-main">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="exam-checkbox" data-exam="coagulacion" checked>
+                        <span class="checkmark"></span>
+                        Coagulación completa
+                    </label>
+                </div>
+                <div class="exam-suboptions">
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="inr">
+                            <span class="checkmark"></span>
+                            INR
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="tp">
+                            <span class="checkmark"></span>
+                            Tiempo Protrombina
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-gases">
+        <div class="panel-section">
+            <h3 class="panel-title">GASES EN SANGRE</h3>
+            <div class="exam-group">
+                <div class="exam-main">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="exam-checkbox" data-exam="gases" checked>
+                        <span class="checkmark"></span>
+                        Gases en sangre completo
+                    </label>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-nutricional">
+        <div class="panel-section">
+            <h3 class="panel-title">NUTRICIONAL</h3>
+            <div class="exam-group">
+                <div class="exam-main">
+                    <label class="checkbox-container">
+                        <input type="checkbox" class="exam-checkbox" data-exam="nutricional" checked>
+                        <span class="checkmark"></span>
+                        Perfil Nutricional
+                    </label>
+                </div>
+                <div class="exam-suboptions">
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="proteinas">
+                            <span class="checkmark"></span>
+                            Proteínas/Albúmina
+                        </label>
+                    </div>
+                    <div class="exam-suboption">
+                        <label class="checkbox-container">
+                            <input type="checkbox" class="exam-checkbox" data-exam="lipidos">
+                            <span class="checkmark"></span>
+                            Lípidos (Col, LDL, HDL)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="lib/patterns.js"></script>
+    <script src="lib/extractors.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
