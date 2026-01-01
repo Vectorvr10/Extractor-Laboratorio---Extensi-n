@@ -7,16 +7,44 @@ Una herramienta de extracción de exámenes automatizados para el Servicio de Ar
 - Mail: vectorvr10@gmail.com
 
 ### ℹ️ POLÍTICA DE PRIVACIDAD
-Última actualización: 30 de diciembre de 2025
+Última actualización: 31 de Diciembre del 2025
 
-1. Recopilación de datos
-La extensión "Extractor de Laboratorio" no recopila, almacena, ni transmite ningún dato personal, información de salud, ni credenciales de usuario.
+En **Extractor de Laboratorio**, valoramos la privacidad de nuestros usuarios y la confidencialidad de la información médica. Esta Política de Privacidad describe cómo nuestra extensión de navegador trata la información.
 
-2. Uso de Permisos
-La extensión solicita permisos para ejecutarse en sitios específicos (como sistemas clínicos e intranet). Estos permisos se utilizan exclusivamente para inyectar el menú de navegación visual en la interfaz del usuario. La extensión no lee el contenido de las páginas web ni monitorea la navegación del usuario fuera de la funcionalidad del menú.
+### 1. Información que procesamos
 
-3. Terceros
-No compartimos información con terceros ni utilizamos servicios de análisis (analytics) externos.
+Nuestra extensión está diseñada para facilitar la organización de resultados de laboratorio. Para cumplir con su función, la extensión accede a:
 
-4. Contacto
-Para consultas sobre esta herramienta, puede contactar al equipo de desarrollo de Medicina UFRO.
+* **Contenido de sitios web (vía activeTab):** Solo cuando el usuario hace clic en la extensión, esta lee el texto de la pestaña activa del sistema hospitalario (HIS) para identificar valores numéricos de exámenes.
+* **Datos del portapapeles (vía clipboardRead):** Si el usuario utiliza la función de "Pegar", la extensión procesa el texto copiado para extraer datos clínicos.
+* **Información de Salud e Identificación:** Durante el procesamiento, la extensión puede leer nombres de pacientes, números de identificación y resultados de exámenes médicos (como hemogramas, PCR, etc.).
+
+### 2. Almacenamiento y Transmisión de Datos (Compromiso de Privacidad)
+
+* **Procesamiento Local:** Todo el procesamiento de los datos médicos se realiza de forma estrictamente **local** en el dispositivo del usuario.
+* **Sin Servidores Externos:** La extensión **no recolecta, no almacena en la nube, ni transmite** ninguna información personal o médica a servidores externos ni a terceros.
+* **Uso de Almacenamiento Local (Storage):** Utilizamos la API `chrome.storage.local` únicamente para guardar las preferencias de configuración del usuario (por ejemplo, si prefiere el texto en mayúsculas o qué tipos de exámenes marcar por defecto). No guardamos datos de pacientes en este almacenamiento persistente.
+
+### 3. Justificación de Permisos
+
+Para funcionar correctamente, solicitamos los siguientes permisos:
+
+* **activeTab:** Para leer los datos del sistema médico solo cuando el usuario lo solicita explícitamente.
+* **clipboardRead:** Para permitir al usuario procesar reportes que ya tiene copiados en su portapapeles.
+* **storage:** Para recordar tus preferencias de formato y mejorar la experiencia de usuario.
+
+### 4. Uso de Código de Terceros
+
+La extensión **no utiliza código remoto**. Todo el código necesario para el funcionamiento de la extensión está empaquetado localmente, lo que garantiza que no se puedan inyectar scripts maliciosos desde servidores externos.
+
+### 5. Terceros y Divulgación
+
+No vendemos, intercambiamos ni transferimos de ninguna forma tu información a terceros. Dado que no recolectamos datos en servidores, no existe una base de datos que pueda ser compartida.
+
+### 6. Cambios en esta Política
+
+Podemos actualizar esta política ocasionalmente. Cualquier cambio será reflejado en esta página y se notificará mediante la actualización de la versión de la extensión en la Chrome Web Store.
+
+### 7. Contacto
+
+Si tienes preguntas sobre esta política o el manejo de datos, puedes contactarnos en: vectorvr10@gmail.com
