@@ -1,16 +1,8 @@
-// Content script simplificado
-console.log('Extractor SSASUR cargado');
+console.log('Extractor de Laboratorio cargado');
 
-// Escuchar mensajes del background script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'extractText') {
-        // Extraer texto de la página actual
-        const pageText = document.body.innerText;
-        sendResponse({ text: pageText });
-    }
-    
-    if (message.action === 'autoExtract') {
-        // Notificar que se solicita auto-extracción
-        chrome.runtime.sendMessage({ action: 'autoExtractRequested' });
-    }
+  if (message.action === 'getPageText') {
+    sendResponse({ text: document.body.innerText });
+  }
+  return true;
 });

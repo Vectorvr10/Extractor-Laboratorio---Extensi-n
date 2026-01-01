@@ -1,12 +1,11 @@
-// popup.js - MODIFICADO CON LAS NUEVAS ESPECIFICACIONES
-class SSASURExtractor {
+class ExtractorLab {
     constructor() {
         this.extractor = new SimpleExtractor();
         this.currentText = '';
         this.results = '';
-        this.autoMode = false; // AUTO MODE DESACTIVADO POR DEFECTO
-        this.activeCategory = 'all'; // TODOS SELECCIONADOS POR DEFECTO
-        this.allSelected = true; // TODOS LOS EXÁMENES SELECCIONADOS POR DEFECTO
+        this.autoMode = false;
+        this.activeCategory = 'all';
+        this.allSelected = true;
         
         this.initializeElements();
         this.bindEvents();
@@ -14,28 +13,22 @@ class SSASURExtractor {
         this.setupDarkMode();
         this.updateTabIndicators();
         
-        // Cargar "Todos los Exámenes" por defecto
         this.loadAllExams();
         
-        // Seleccionar TODOS los checkboxes por defecto
         setTimeout(() => {
             this.selectAllExams();
-            // Mostrar mensaje inicial
             this.showResultsPlaceholder('Haz clic en "Extraer Ahora" para procesar texto del portapapeles');
         }, 100);
     }
 
     initializeElements() {
-        // Tabs de categorías
         this.categoryTabs = document.querySelectorAll('.category-tab');
         
-        // Panel avanzado
         this.advancedPanel = document.getElementById('advancedOptionsPanel');
         this.advancedTitle = document.getElementById('advancedPanelTitle');
         this.advancedContainer = document.getElementById('advancedExamsContainer');
         this.closeAdvancedBtn = document.getElementById('closeAdvancedBtn');
         
-        // Templates
         this.templates = {
             hemograma: document.getElementById('template-hemograma'),
             bioquimica: document.getElementById('template-bioquimica'),
@@ -44,32 +37,27 @@ class SSASURExtractor {
             nutricional: document.getElementById('template-nutricional')
         };
         
-        // Opciones de formato (AHORA INCLUYE FECHA)
         this.formatFecha = document.getElementById('formatFecha');
         this.formatHb = document.getElementById('formatHb');
         this.formatMayusculas = document.getElementById('formatMayusculas');
         this.formatDosPuntos = document.getElementById('formatDosPuntos');
         this.formatSaltos = document.getElementById('formatSaltos');
         
-        // Checkboxes de exámenes (se inicializarán dinámicamente)
         this.examCheckboxes = [];
         
-        // Botones
         this.extractBtn = document.getElementById('extractBtn');
         this.copyAllBtn = document.getElementById('copyAllBtn');
         this.selectAllBtn = document.getElementById('selectAllBtn');
         this.clearAllBtn = document.getElementById('clearAllBtn');
         this.autoModeBtn = document.getElementById('autoModeBtn');
-        this.settingsBtn = document.getElementById('settingsBtn'); // Botón para redireccionar
+        this.settingsBtn = document.getElementById('settingsBtn');
         
-        // Elementos de resultados
         this.resultsContent = document.getElementById('resultsContent');
         this.resultsPlaceholder = document.getElementById('resultsPlaceholder');
         this.notification = document.getElementById('notification');
     }
 
     bindEvents() {
-        // Tabs de categorías - MODIFICADO para mantener selecciones
         this.categoryTabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
                 const category = e.currentTarget.dataset.category;
@@ -77,30 +65,22 @@ class SSASURExtractor {
             });
         });
 
-        // Botón cerrar panel avanzado
         this.closeAdvancedBtn.addEventListener('click', () => {
             this.closeAdvancedPanel();
         });
 
-        // Botones principales
         this.extractBtn.addEventListener('click', () => this.extractFromClipboard());
         this.copyAllBtn.addEventListener('click', () => this.copyResults());
-        
-        // Botón "Seleccionar Todo" - MODIFICADO para toggle
-        this.selectAllBtn.addEventListener('click', () => {
-            this.toggleAllExams();
-        });
-        
+        this.selectAllBtn.addEventListener('click', () => this.toggleAllExams());
         this.clearAllBtn.addEventListener('click', () => this.clearAllExams());
         this.autoModeBtn.addEventListener('click', () => this.toggleAutoMode());
         
-        // MODIFICADO: Cambiar la función del botón settings para redireccionar
         this.settingsBtn.addEventListener('click', () => {
             this.redirectToExtractorHIS();
         });
 
-        // Listeners para opciones de formato (AHORA INCLUYE FECHA)
-        [this.formatFecha, this.formatHb, this.formatMayusculas, this.formatDosPuntos, this.formatSaltos].forEach(option => {
+        [this.formatFecha, this.formatHb, this.formatMayusculas, 
+         this.formatDosPuntos, this.formatSaltos].forEach(option => {
             option.addEventListener('change', () => {
                 this.saveSettings();
                 if (this.currentText) {
@@ -109,7 +89,6 @@ class SSASURExtractor {
             });
         });
 
-        // Clic fuera del panel avanzado para cerrar
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.category-tab') && 
                 !e.target.closest('.advanced-options-panel') &&
@@ -119,61 +98,35 @@ class SSASURExtractor {
         });
     }
 
-    // NUEVO MÉTODO: Redireccionar al enlace de ExtractorHIS
     redirectToExtractorHIS() {
-        // Abrir el enlace en una nueva pestaña
         chrome.tabs.create({
             url: 'https://notionmedufro.github.io/ExtractorHIS/',
             active: true
         });
-        
-        // Mostrar notificación
         this.showNotification('Redirigiendo a ExtractorHIS', 'info');
     }
 
-    // Resto del código permanece igual...
     switchCategory(category, tabElement) {
-        // Actualizar categoría activa
         this.activeCategory = category;
         
-        // Actualizar tabs activos
         this.categoryTabs.forEach(tab => {
             tab.classList.toggle('active', tab.dataset.category === category);
         });
         
-        // Mostrar/ocultar panel avanzado según la categoría
         if (category === 'all') {
             this.closeAdvancedPanel();
-            // Para "Todos", mantener todos los checkboxes visibles
             this.loadAllExams();
         } else {
             this.openAdvancedPanel(category);
         }
         
-        // Actualizar indicadores
         this.updateTabIndicators();
-        
-        // Notificar cambio
-        const categoryNames = {
-            'all': 'Todos los exámenes',
-            'hemograma': 'Hemograma',
-            'bioquimica': 'Bioquímica',
-            'coagulacion': 'Coagulación',
-            'gases': 'Gases en Sangre',
-            'nutricional': 'Nutricional'
-        };
-        
-        this.showNotification(`Mostrando ${categoryNames[category]}`, 'info');
     }
 
     openAdvancedPanel(category) {
-        // Cargar contenido específico según categoría
         this.loadCategoryContent(category);
-        
-        // Mostrar panel con animación
         this.advancedPanel.classList.add('show');
         
-        // Actualizar título
         const titles = {
             'hemograma': 'Opciones Avanzadas - Hemograma',
             'bioquimica': 'Opciones Avanzadas - Bioquímica',
@@ -187,40 +140,28 @@ class SSASURExtractor {
 
     closeAdvancedPanel() {
         this.advancedPanel.classList.remove('show');
-        // Mantener la categoría activa visualmente
         this.categoryTabs.forEach(tab => {
             tab.classList.toggle('active', tab.dataset.category === this.activeCategory);
         });
     }
 
     loadCategoryContent(category) {
-        // Limpiar contenedor
         this.advancedContainer.innerHTML = '';
         
-        // Clonar template correspondiente
         if (this.templates[category]) {
             const templateContent = this.templates[category].content.cloneNode(true);
             this.advancedContainer.appendChild(templateContent);
         }
         
-        // Recolectar checkboxes
         this.collectCheckboxes();
-        
-        // Vincular eventos a los nuevos checkboxes
         this.bindCheckboxEvents();
-        
-        // Cargar estados guardados (sin modificar selecciones actuales)
         this.loadCheckboxStates();
-        
-        // Actualizar indicadores
         this.updateTabIndicators();
     }
 
     loadAllExams() {
-        // Para "Todos", cargar todos los templates
         this.advancedContainer.innerHTML = '';
         
-        // Cargar todos los templates
         const categories = ['hemograma', 'bioquimica', 'coagulacion', 'gases', 'nutricional'];
         categories.forEach(cat => {
             if (this.templates[cat]) {
@@ -229,11 +170,9 @@ class SSASURExtractor {
             }
         });
         
-        // Recolectar y vincular checkboxes
         this.collectCheckboxes();
         this.bindCheckboxEvents();
         
-        // Asegurar que todos estén seleccionados por defecto
         if (this.allSelected) {
             this.selectAllExams();
         } else {
@@ -245,7 +184,6 @@ class SSASURExtractor {
     }
 
     selectAllExams() {
-        // Seleccionar TODOS los checkboxes
         this.examCheckboxes.forEach(cb => {
             cb.checked = true;
         });
@@ -260,17 +198,14 @@ class SSASURExtractor {
 
     bindCheckboxEvents() {
         this.examCheckboxes.forEach(cb => {
-            // Remover listeners anteriores si existen
             const newCb = cb.cloneNode(true);
             cb.parentNode.replaceChild(newCb, cb);
             
-            // Añadir nuevo listener
             newCb.addEventListener('change', () => {
                 this.handleCheckboxChange();
             });
         });
         
-        // Recolectar checkboxes actualizados
         this.collectCheckboxes();
     }
 
@@ -285,10 +220,8 @@ class SSASURExtractor {
     }
 
     updateTabIndicators() {
-        // Recolectar checkboxes actuales
         this.collectCheckboxes();
         
-        // Contar selecciones por categoría
         const categorySelections = {
             'hemograma': ['hemograma', 'hcto', 'vcm', 'chcm', 'rdw', 'reticulocitos', 'linfocitos', 'ran', 'ral'],
             'bioquimica': ['pcr', 'renal', 'hepatico', 'vfg', 'urea', 'electrolitos', 'magnesio', 'acidoUrico'],
@@ -297,23 +230,18 @@ class SSASURExtractor {
             'nutricional': ['nutricional', 'proteinas', 'lipidos']
         };
         
-        // Actualizar cada tab
         this.categoryTabs.forEach(tab => {
             const category = tab.dataset.category;
             
             if (category === 'all') {
-                // Para "Todos", verificar si hay al menos un checkbox marcado
                 const hasAnyChecked = this.examCheckboxes.some(cb => cb.checked);
                 const allChecked = this.examCheckboxes.length > 0 && 
                                   this.examCheckboxes.every(cb => cb.checked);
                 
                 tab.classList.toggle('has-selected', hasAnyChecked);
-                
-                // Actualizar estado de "todos seleccionados"
                 this.allSelected = allChecked;
                 
             } else {
-                // Para categorías específicas, verificar checkboxes correspondientes
                 const categoryChecks = categorySelections[category] || [];
                 const hasCategoryChecked = this.examCheckboxes.some(cb => 
                     cb.checked && categoryChecks.includes(cb.dataset.exam)
@@ -325,11 +253,9 @@ class SSASURExtractor {
     }
 
     updateSelectAllButton() {
-        // Verificar si todos están seleccionados
         const allChecked = this.examCheckboxes.length > 0 && 
                           this.examCheckboxes.every(cb => cb.checked);
         
-        // Actualizar texto del botón
         if (allChecked) {
             this.selectAllBtn.innerHTML = '<span>✗</span> Deseleccionar Todo';
             this.allSelected = true;
@@ -340,7 +266,6 @@ class SSASURExtractor {
     }
 
     toggleAllExams() {
-        // Alternar entre seleccionar todos y deseleccionar todos
         const shouldSelect = !this.allSelected;
         
         this.examCheckboxes.forEach(cb => {
@@ -348,8 +273,6 @@ class SSASURExtractor {
         });
         
         this.allSelected = shouldSelect;
-        
-        // Actualizar interfaz
         this.saveSettings();
         this.updateTabIndicators();
         this.updateSelectAllButton();
@@ -402,14 +325,12 @@ class SSASURExtractor {
     }
 
     getSelectedExams() {
-        this.collectCheckboxes(); // Asegurarse de tener checkboxes actualizados
+        this.collectCheckboxes();
         
-        // Solo incluir exámenes si están seleccionados Y la opción de fecha está activa
         const exams = this.examCheckboxes
             .filter(cb => cb.checked)
             .map(cb => cb.dataset.exam);
             
-        // Añadir fecha si está seleccionada en formato
         if (this.formatFecha.checked) {
             exams.unshift('fecha');
         }
@@ -528,8 +449,6 @@ class SSASURExtractor {
         this.saveSettings();
     }
 
-    // MODIFICADO: Eliminar showSettings y reemplazar por redirectToExtractorHIS
-
     showNotification(message, type = 'info') {
         this.notification.textContent = message;
         this.notification.className = `notification show ${type}`;
@@ -565,7 +484,6 @@ class SSASURExtractor {
     loadSavedSettings() {
         chrome.storage.local.get(['settings', 'examStates'], (data) => {
             if (data.settings) {
-                // Cargar opciones de formato
                 this.formatFecha.checked = data.settings.formatFecha !== false;
                 this.formatHb.checked = data.settings.formatHb !== false;
                 this.formatMayusculas.checked = data.settings.formatMayusculas || false;
@@ -576,25 +494,21 @@ class SSASURExtractor {
                 this.activeCategory = data.settings.activeCategory || 'all';
                 this.allSelected = data.settings.allSelected !== false;
                 
-                // Actualizar botón de modo automático
                 const modeText = this.autoMode ? 'ON' : 'OFF';
                 const modeClass = this.autoMode ? 'success' : '';
                 this.autoModeBtn.innerHTML = `<span>🤖</span> Modo Auto: ${modeText}`;
                 this.autoModeBtn.className = `action-btn ${modeClass}`;
                 
-                // Restaurar categoría activa - "Todos los Exámenes"
                 const allTab = document.querySelector('.category-tab[data-category="all"]');
                 if (allTab) {
                     this.switchCategory('all');
                 }
             }
 
-            // Cargar estados de checkboxes
             setTimeout(() => {
                 if (data.examStates && !this.allSelected) {
                     this.loadCheckboxStates();
                 } else {
-                    // Seleccionar todos por defecto
                     this.selectAllExams();
                 }
                 this.updateTabIndicators();
@@ -618,7 +532,6 @@ class SSASURExtractor {
     }
 }
 
-// Inicializar
 document.addEventListener('DOMContentLoaded', () => {
-    new SSASURExtractor();
+    new ExtractorLab();
 });
