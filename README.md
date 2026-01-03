@@ -15,7 +15,6 @@ En **Extractor de Laboratorio**, valoramos la privacidad de nuestros usuarios y 
 
 Nuestra extensión está diseñada para facilitar la organización de resultados de laboratorio. Para cumplir con su función, la extensión accede a:
 
-* **Contenido de sitios web (vía activeTab):** Solo cuando el usuario hace clic en la extensión, esta lee el texto de la pestaña activa del sistema hospitalario (HIS) para identificar valores numéricos de exámenes.
 * **Datos del portapapeles (vía clipboardRead):** Si el usuario utiliza la función de "Pegar", la extensión procesa el texto copiado para extraer datos clínicos.
 * **Información de Salud e Identificación:** Durante el procesamiento, la extensión puede leer nombres de pacientes, números de identificación y resultados de exámenes médicos (como hemogramas, PCR, etc.).
 
@@ -29,7 +28,6 @@ Nuestra extensión está diseñada para facilitar la organización de resultados
 
 Para funcionar correctamente, solicitamos los siguientes permisos:
 
-* **activeTab:** Para leer los datos del sistema médico solo cuando el usuario lo solicita explícitamente.
 * **clipboardRead:** Para permitir al usuario procesar reportes que ya tiene copiados en su portapapeles.
 * **storage:** Para recordar tus preferencias de formato y mejorar la experiencia de usuario.
 
