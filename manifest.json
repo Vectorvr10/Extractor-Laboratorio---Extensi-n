@@ -3,7 +3,7 @@
   "name": "Extractor de Laboratorio",
   "version": "1.0.0",
   "description": "Herramienta para extraer datos de exámenes médicos del HIS",
-  "permissions": ["activeTab", "clipboardRead", "storage"],
+  "permissions": ["clipboardRead", "storage"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
