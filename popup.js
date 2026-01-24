@@ -39,7 +39,10 @@ class ExtractorLab {
         
         this.formatFecha = document.getElementById('formatFecha');
         this.formatHb = document.getElementById('formatHb');
+        this.formatGB = document.getElementById('formatGB');
+        this.formatELP = document.getElementById('formatELP');
         this.formatMayusculas = document.getElementById('formatMayusculas');
+        this.formatRedondear = document.getElementById('formatRedondear');
         this.formatDosPuntos = document.getElementById('formatDosPuntos');
         this.formatSaltos = document.getElementById('formatSaltos');
         
@@ -79,7 +82,7 @@ class ExtractorLab {
             this.redirectToExtractorHIS();
         });
 
-        [this.formatFecha, this.formatHb, this.formatMayusculas, 
+        [this.formatFecha, this.formatHb, this.formatGB, this.formatELP, this.formatMayusculas, this.formatRedondear, 
          this.formatDosPuntos, this.formatSaltos].forEach(option => {
             option.addEventListener('change', () => {
                 this.saveSettings();
@@ -342,8 +345,11 @@ class ExtractorLab {
         return {
             usarDosPuntos: this.formatDosPuntos.checked,
             usarMayusculas: this.formatMayusculas.checked,
+            usarRedondear: this.formatRedondear.checked,
             usarSaltosLinea: this.formatSaltos.checked,
             usarHb: this.formatHb.checked,
+            usarGB: this.formatGB.checked,
+            usarELP: this.formatELP.checked,
             dateFormat: 'dd/mm/yyyy'
         };
     }
@@ -462,7 +468,10 @@ class ExtractorLab {
         const settings = {
             formatFecha: this.formatFecha.checked,
             formatHb: this.formatHb.checked,
+            formatGB: this.formatGB.checked,
+            formatELP: this.formatELP.checked,
             formatMayusculas: this.formatMayusculas.checked,
+            formatRedondear: this.formatRedondear.checked,
             formatDosPuntos: this.formatDosPuntos.checked,
             formatSaltos: this.formatSaltos.checked,
             autoMode: this.autoMode,
@@ -486,7 +495,10 @@ class ExtractorLab {
             if (data.settings) {
                 this.formatFecha.checked = data.settings.formatFecha !== false;
                 this.formatHb.checked = data.settings.formatHb !== false;
+                this.formatGB.checked = data.settings.formatGB !== false;
+                this.formatELP.checked = data.settings.formatELP !== false;
                 this.formatMayusculas.checked = data.settings.formatMayusculas || false;
+                this.formatRedondear.checked = data.settings.formatRedondear || false;
                 this.formatDosPuntos.checked = data.settings.formatDosPuntos !== false;
                 this.formatSaltos.checked = data.settings.formatSaltos !== false;
                 

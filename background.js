@@ -3,7 +3,10 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.set({
     settings: {
       formatHb: true,
+      formatGB: true,
+      formatELP: true,
       formatMayusculas: false,
+      formatRedondear: false,
       formatDosPuntos: true,
       formatSaltos: true,
       formatFecha: true,
